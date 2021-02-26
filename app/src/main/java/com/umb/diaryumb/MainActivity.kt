@@ -1,25 +1,26 @@
 package com.umb.diaryumb
 
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import java.sql.Connection
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
+        connect()
+    }
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+    private fun connect() {
+        thread {
+            val db = Database()
+            val con: Connection = db.connection
+            println(con?.createStatement().executeQuery("SELECT * FROM agendas"));
         }
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
