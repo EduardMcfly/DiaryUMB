@@ -1,11 +1,11 @@
-package com.umb.diaryumb
+package com.umb.diaryumb.diary
 
 data class Diary(
-    val id: Int,
+    var id: Long?,
     val date: String,
     val affair: String,
     val activity: String,
-    var selected: Boolean = true
+    var selected: Boolean = false
 ) {
     fun isSelected(): Boolean {
         return selected

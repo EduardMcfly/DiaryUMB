@@ -4,23 +4,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import java.sql.Connection
-import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
-        connect()
-    }
-
-    private fun connect() {
-        thread {
-            val db = Database()
-            val con: Connection = db.connection
-            println(con?.createStatement().executeQuery("SELECT * FROM agendas"));
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

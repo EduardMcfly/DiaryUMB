@@ -1,4 +1,4 @@
-package com.umb.diaryumb
+package com.umb.diaryumb.diary
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import com.google.android.material.textview.MaterialTextView
+import com.umb.diaryumb.R
 
 
 interface SelectedIndex {

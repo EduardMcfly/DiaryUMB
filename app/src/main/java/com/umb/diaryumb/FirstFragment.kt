@@ -2,8 +2,6 @@ package com.umb.diaryumb
 
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
-import android.app.TimePickerDialog
-import android.app.TimePickerDialog.OnTimeSetListener
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +10,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
 import androidx.fragment.app.Fragment
+import com.umb.diaryumb.diary.Diary
+import com.umb.diaryumb.diary.DiaryAdapter
+import com.umb.diaryumb.diary.DiaryModel
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 
 /**
@@ -27,6 +29,7 @@ class FirstFragment : Fragment() {
     private var mMonth: Int = 0
     private var mDay: Int = 0
     var datePickerDialog: DatePickerDialog? = null
+    var diaryModel: DiaryModel = DiaryModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,16 +57,25 @@ class FirstFragment : Fragment() {
 
         // Adding the items to the list when the add button is pressed
         add.setOnClickListener {
-            itemlist.add(
-                Diary(
-                    1,
-                    date.text.toString(),
-                    affair.text.toString(),
-                    activity.text.toString()
-                )
-            )
-            listView.adapter = adapter
-            adapter.notifyDataSetChanged()
+
+            thread {
+                try {
+                    val diary = diaryModel.add(
+                        date.text.toString(),
+                        affair.text.toString(),
+                        activity.text.toString()
+                    )
+                    getActivity()?.runOnUiThread {
+                        itemlist.add(
+                            diary
+                        )
+                        listView.adapter = adapter
+                        adapter.notifyDataSetChanged()
+                    }
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+            }
             // This is because every time when you add the item the input space or the eidt text space will be cleared
             date.text.clear()
             affair.text.clear()
@@ -97,7 +109,6 @@ class FirstFragment : Fragment() {
         }
 
 
-
         val c: Calendar = Calendar.getInstance()
         mYear = c.get(Calendar.YEAR)
         mMonth = c.get(Calendar.MONTH)
@@ -118,6 +129,20 @@ class FirstFragment : Fragment() {
 
         date.setOnClickListener {
             onClick(it)
+        }
+        thread {
+            var data = diaryModel.getAll()
+            try {
+                getActivity()?.runOnUiThread {
+                    if (data.size > 0) {
+                        itemlist.addAll(data)
+                        listView.adapter = adapter
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
         }
         return root
 
