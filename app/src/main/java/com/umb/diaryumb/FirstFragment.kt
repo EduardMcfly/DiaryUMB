@@ -1,31 +1,102 @@
 package com.umb.diaryumb
 
+import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
+import android.app.TimePickerDialog
+import android.app.TimePickerDialog.OnTimeSetListener
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.navigation.fragment.findNavController
+import android.widget.EditText
+import android.widget.ListView
+import androidx.fragment.app.Fragment
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class FirstFragment : Fragment() {
 
+    var itemlist = ArrayList<Diary>()
+    private lateinit var date: EditText
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View? {
+        val root = inflater.inflate(R.layout.fragment_first, container, false)
+
+        date = root.findViewById(R.id.date)
+        val affair = root.findViewById<EditText>(R.id.affair)
+        val activity = root.findViewById<EditText>(R.id.activity)
+
+        val listView = root.findViewById<ListView>(R.id.list)
+        val add = root.findViewById<Button>(R.id.add)
+        val delete = root.findViewById<Button>(R.id.delete)
+        val clear = root.findViewById<Button>(R.id.clear)
+
+
+        var adapter = DiaryAdapter(
+            root.context,
+            R.layout.diary_list_item,
+            itemlist
+        )
+
+
+        // Adding the items to the list when the add button is pressed
+        add.setOnClickListener {
+            itemlist.add(
+                Diary(
+                    1,
+                    date.text.toString(),
+                    affair.text.toString(),
+                    activity.text.toString()
+                )
+            )
+            listView.adapter = adapter
+            adapter.notifyDataSetChanged()
+            // This is because every time when you add the item the input space or the eidt text space will be cleared
+            date.text.clear()
+            affair.text.clear()
+            activity.text.clear()
+        }
+        // Clearing all the items in the list when the clear button is pressed
+        clear.setOnClickListener {
+
+            itemlist.clear()
+            adapter.notifyDataSetChanged()
+        }
+        // Adding the toast message to the list when an item on the list is pressed
+        listView.setOnItemClickListener { adapterView, view, i, l ->
+            android.widget.Toast.makeText(
+                root.context,
+                "You Selected the item --> " + itemlist.get(i),
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+        // Selecting and Deleting the items from the list when the delete button is pressed
+        delete.setOnClickListener {
+            val count = listView.count
+            var item = count - 1
+            while (item >= 0) {
+                if (itemlist[item].isSelected()) {
+                    adapter.remove(itemlist[item])
+                }
+                item--
+            }
+            adapter.notifyDataSetChanged()
+        }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_first, container, false)
-    }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        return root
 
-        view.findViewById<Button>(R.id.button_first).setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
     }
 }
