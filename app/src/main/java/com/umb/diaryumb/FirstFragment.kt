@@ -23,6 +23,11 @@ class FirstFragment : Fragment() {
 
     var itemlist = ArrayList<Diary>()
     private lateinit var date: EditText
+    private var mYear = 0
+    private var mMonth: Int = 0
+    private var mDay: Int = 0
+    var datePickerDialog: DatePickerDialog? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -90,13 +95,35 @@ class FirstFragment : Fragment() {
             }
             adapter.notifyDataSetChanged()
         }
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_first, container, false)
+
+
+
+        val c: Calendar = Calendar.getInstance()
+        mYear = c.get(Calendar.YEAR)
+        mMonth = c.get(Calendar.MONTH)
+        mDay = c.get(Calendar.DAY_OF_MONTH)
+        datePickerDialog = this.context?.let {
+            DatePickerDialog(
+                it,
+                OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                    mYear = year
+                    mMonth = monthOfYear + 1
+                    mDay = dayOfMonth
+                    date.setText(
+                        "$mDay-$mMonth-$mYear"
+                    )
+                }, mYear, mMonth, mDay
+            )
         }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        date.setOnClickListener {
+            onClick(it)
+        }
         return root
 
+    }
+
+    fun onClick(v: View) {
+        datePickerDialog?.show()
     }
 }
