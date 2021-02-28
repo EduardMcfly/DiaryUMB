@@ -97,15 +97,30 @@ class FirstFragment : Fragment() {
         }
         // Selecting and Deleting the items from the list when the delete button is pressed
         delete.setOnClickListener {
-            val count = listView.count
-            var item = count - 1
-            while (item >= 0) {
-                if (itemlist[item].isSelected()) {
-                    adapter.remove(itemlist[item])
+
+            thread {
+                val count = listView.count
+                var item = count - 1
+                while (item >= 0) {
+                    if (itemlist[item].isSelected()) {
+                        itemlist[item].id?.let { it1 ->
+                            diaryModel.delete(
+                                it1
+                            )
+                        }
+                        getActivity()?.runOnUiThread {
+                            try {
+                                adapter.remove(itemlist[item])
+                                adapter.notifyDataSetChanged()
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                    item--
                 }
-                item--
             }
-            adapter.notifyDataSetChanged()
+
         }
 
 
@@ -121,7 +136,7 @@ class FirstFragment : Fragment() {
                     mMonth = monthOfYear + 1
                     mDay = dayOfMonth
                     date.setText(
-                        "$mDay-$mMonth-$mYear"
+                        "$mYear-$mMonth-$mDay"
                     )
                 }, mYear, mMonth, mDay
             )

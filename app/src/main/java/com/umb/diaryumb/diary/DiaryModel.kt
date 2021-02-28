@@ -58,4 +58,23 @@ class DiaryModel : Database() {
         c.close()
         return diary
     }
+
+    fun delete(id: Long) {
+
+        val c = connection
+
+        val query =
+            "DELETE FROM \"public\".\"agendas\" WHERE \"id\" = %s"
+        val s = c.prepareStatement(
+            query.format(id),
+        )
+        val affectedRows: Int = s.executeUpdate()
+        if (affectedRows == 0) {
+            throw SQLException("Creating user failed, no rows affected.");
+        }
+
+        c.close()
+    }
+
+
 }
